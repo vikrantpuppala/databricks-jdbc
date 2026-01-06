@@ -1,0 +1,13 @@
+{
+  "mxbean_heap_max_bytes": 2147483648,
+  "heap_used_bytes": 4442112,
+  "mxbean_heap_committed_bytes": 2147483648,
+  "mxbean_nonheap_used_bytes": 83401488,
+  "heap_total_bytes": 2147483648,
+  "heap_free_bytes": 2143041536,
+  "mxbean_nonheap_committed_bytes": 86704128,
+  "mxbean_heap_used_bytes": 17174800,
+  "g1_region_size_bytes": 1048576,
+  "g1_young_bytes": 2097152,
+  "mxbean_heap_init_bytes": 2147483648
+}

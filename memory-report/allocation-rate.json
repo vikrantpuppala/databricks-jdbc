@@ -1,0 +1,12 @@
+{
+  "duration_ms": 329708,
+  "allocation_rate_bytes_per_sec": 6.851388994382908E8,
+  "allocation_rate_mb_per_sec": 653.3993715651425,
+  "eden_peak_used_bytes": 1283457024,
+  "estimated_allocation_bytes": 225895776256,
+  "eden_churn_count": 167,
+  "young_gc_count_delta": 167,
+  "eden_used_bytes": 1048576,
+  "eden_committed_bytes": 1352663040,
+  "eden_max_bytes": 1352663040
+}
