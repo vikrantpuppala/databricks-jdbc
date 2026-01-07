@@ -9,3 +9,6 @@ logs/
 *.pem
 **/test/java/com/databricks/client/jdbc/DatabricksDriverExamples.java
 dependency-reduced-pom.xml
+/memory-reports-no-arrow/
+/memory-reports/
+/memory-report/

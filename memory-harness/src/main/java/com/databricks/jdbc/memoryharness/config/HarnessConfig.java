@@ -20,6 +20,8 @@ public final class HarnessConfig {
     private final int resultSetSmallIterations;
     private final int resultSetMediumIterations;
     private final int resultSetMediumRowCount;
+    private final int resultSetLargeIterations;
+    private final int resultSetLargeRowCount;
     private final long mixedWorkloadDurationSeconds;
 
     // Output settings
@@ -35,6 +37,8 @@ public final class HarnessConfig {
         this.resultSetSmallIterations = builder.resultSetSmallIterations;
         this.resultSetMediumIterations = builder.resultSetMediumIterations;
         this.resultSetMediumRowCount = builder.resultSetMediumRowCount;
+        this.resultSetLargeIterations = builder.resultSetLargeIterations;
+        this.resultSetLargeRowCount = builder.resultSetLargeRowCount;
         this.mixedWorkloadDurationSeconds = builder.mixedWorkloadDurationSeconds;
         this.outputDirectory = builder.outputDirectory;
     }
@@ -53,6 +57,8 @@ public final class HarnessConfig {
      * - HARNESS_RS_SMALL_ITERATIONS: Small result set iterations (default: 100)
      * - HARNESS_RS_MEDIUM_ITERATIONS: Medium result set iterations (default: 20)
      * - HARNESS_RS_MEDIUM_ROWS: Medium result set row count (default: 5000)
+     * - HARNESS_RS_LARGE_ITERATIONS: Large result set iterations (default: 1)
+     * - HARNESS_RS_LARGE_ROWS: Large result set row count (default: 500000)
      * - HARNESS_MIXED_DURATION_SECONDS: Mixed workload duration in seconds (default: 120)
      * - HARNESS_OUTPUT_DIR: Output directory (default: memory-report)
      */
@@ -71,6 +77,8 @@ public final class HarnessConfig {
                 .resultSetSmallIterations(getEnvInt("HARNESS_RS_SMALL_ITERATIONS", 100))
                 .resultSetMediumIterations(getEnvInt("HARNESS_RS_MEDIUM_ITERATIONS", 20))
                 .resultSetMediumRowCount(getEnvInt("HARNESS_RS_MEDIUM_ROWS", 5000))
+                .resultSetLargeIterations(getEnvInt("HARNESS_RS_LARGE_ITERATIONS", 1))
+                .resultSetLargeRowCount(getEnvInt("HARNESS_RS_LARGE_ROWS", 500000))
                 .mixedWorkloadDurationSeconds(getEnvLong("HARNESS_MIXED_DURATION_SECONDS", 120))
                 .outputDirectory(getEnvString("HARNESS_OUTPUT_DIR", "memory-report"))
                 .build();
@@ -160,6 +168,14 @@ public final class HarnessConfig {
         return resultSetMediumRowCount;
     }
 
+    public int getResultSetLargeIterations() {
+        return resultSetLargeIterations;
+    }
+
+    public int getResultSetLargeRowCount() {
+        return resultSetLargeRowCount;
+    }
+
     public long getMixedWorkloadDurationSeconds() {
         return mixedWorkloadDurationSeconds;
     }
@@ -179,6 +195,8 @@ public final class HarnessConfig {
                 ", resultSetSmallIterations=" + resultSetSmallIterations +
                 ", resultSetMediumIterations=" + resultSetMediumIterations +
                 ", resultSetMediumRowCount=" + resultSetMediumRowCount +
+                ", resultSetLargeIterations=" + resultSetLargeIterations +
+                ", resultSetLargeRowCount=" + resultSetLargeRowCount +
                 ", mixedWorkloadDurationSeconds=" + mixedWorkloadDurationSeconds +
                 ", outputDirectory='" + outputDirectory + '\'' +
                 '}';
@@ -199,6 +217,8 @@ public final class HarnessConfig {
         private int resultSetSmallIterations = 100;
         private int resultSetMediumIterations = 20;
         private int resultSetMediumRowCount = 5000;
+        private int resultSetLargeIterations = 1;
+        private int resultSetLargeRowCount = 500000;
         private long mixedWorkloadDurationSeconds = 120;
         private String outputDirectory = "memory-report";
 
@@ -244,6 +264,16 @@ public final class HarnessConfig {
 
         public Builder resultSetMediumRowCount(int rowCount) {
             this.resultSetMediumRowCount = rowCount;
+            return this;
+        }
+
+        public Builder resultSetLargeIterations(int iterations) {
+            this.resultSetLargeIterations = iterations;
+            return this;
+        }
+
+        public Builder resultSetLargeRowCount(int rowCount) {
+            this.resultSetLargeRowCount = rowCount;
             return this;
         }
 

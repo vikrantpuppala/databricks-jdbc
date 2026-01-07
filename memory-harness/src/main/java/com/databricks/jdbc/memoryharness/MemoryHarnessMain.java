@@ -25,6 +25,7 @@ import java.util.*;
  *   <li>connection-lifecycle - Connection open/close workload</li>
  *   <li>metadata-heavy - DatabaseMetaData workload</li>
  *   <li>resultset-iteration - ResultSet iteration workload</li>
+ *   <li>large-resultset - Large result set workload (500K-5M rows) with peak heap tracking</li>
  *   <li>mixed-steady-state - Mixed long-running workload</li>
  *   <li>all - Run all workloads (default)</li>
  * </ul>
@@ -104,6 +105,7 @@ public final class MemoryHarnessMain {
         availableWorkloads.put("connection-lifecycle", new ConnectionLifecycleWorkload());
         availableWorkloads.put("metadata-heavy", new MetadataHeavyWorkload());
         availableWorkloads.put("resultset-iteration", new ResultSetIterationWorkload());
+        availableWorkloads.put("large-resultset", new LargeResultSetWorkload());
         availableWorkloads.put("mixed-steady-state", new MixedSteadyStateWorkload());
 
         // Determine which workloads to run
@@ -171,6 +173,8 @@ public final class MemoryHarnessMain {
         configMap.put("resultset_small_iterations", String.valueOf(config.getResultSetSmallIterations()));
         configMap.put("resultset_medium_iterations", String.valueOf(config.getResultSetMediumIterations()));
         configMap.put("resultset_medium_row_count", String.valueOf(config.getResultSetMediumRowCount()));
+        configMap.put("resultset_large_iterations", String.valueOf(config.getResultSetLargeIterations()));
+        configMap.put("resultset_large_row_count", String.valueOf(config.getResultSetLargeRowCount()));
         configMap.put("mixed_workload_duration_seconds", String.valueOf(config.getMixedWorkloadDurationSeconds()));
 
         ReportModel.RunMetadata metadata = ReportModel.createRunMetadata(configMap);
@@ -190,16 +194,32 @@ public final class MemoryHarnessMain {
         // Print summary
         System.out.println("\n=== Summary ===");
         System.out.println("Workloads executed: " + results.size());
+        long overallPeakHeapBytes = 0;
         for (WorkloadResult result : results) {
-            System.out.println("  - " + result.getWorkloadName() + ": " +
-                    result.getDurationMillis() + "ms, " +
-                    result.getTotalOperations() + " ops (" +
-                    result.getSuccessfulOperations() + " success, " +
-                    result.getFailedOperations() + " failed)");
+            StringBuilder sb = new StringBuilder();
+            sb.append("  - ").append(result.getWorkloadName()).append(": ")
+              .append(result.getDurationMillis()).append("ms, ")
+              .append(result.getTotalOperations()).append(" ops (")
+              .append(result.getSuccessfulOperations()).append(" success, ")
+              .append(result.getFailedOperations()).append(" failed)");
+            
+            if (result.getPeakHeapBytes() > 0) {
+                sb.append(", peak heap: ").append(formatBytes(result.getPeakHeapBytes()));
+                if (result.getPeakHeapBytes() > overallPeakHeapBytes) {
+                    overallPeakHeapBytes = result.getPeakHeapBytes();
+                }
+            }
+            if (result.getRowsProcessed() > 0) {
+                sb.append(", rows: ").append(result.getRowsProcessed());
+            }
+            System.out.println(sb.toString());
         }
 
         System.out.println("\nKey Metrics:");
         printKeyMetric("  Heap used (after GC)", heapMetrics, "heap_used_bytes", "mxbean_heap_used_bytes");
+        if (overallPeakHeapBytes > 0) {
+            System.out.println("  Peak heap during workload: " + formatBytes(overallPeakHeapBytes));
+        }
         printKeyMetric("  RSS (final)", rssMetrics, "final_rss_bytes");
         printKeyMetric("  RSS (peak)", rssMetrics, "peak_rss_bytes");
         printKeyMetric("  GC count (delta)", gcMetrics, "delta_total_gc_count");
@@ -280,6 +300,7 @@ public final class MemoryHarnessMain {
         System.out.println("  connection-lifecycle  - Connection open/close stress test");
         System.out.println("  metadata-heavy        - DatabaseMetaData operations");
         System.out.println("  resultset-iteration   - ResultSet iteration (small & medium)");
+        System.out.println("  large-resultset       - Large result set (500K-5M rows) with peak heap tracking");
         System.out.println("  mixed-steady-state    - Long-running mixed workload");
         System.out.println("  all                   - Run all workloads (default)");
         System.out.println("\nRequired environment variables:");
@@ -293,6 +314,8 @@ public final class MemoryHarnessMain {
         System.out.println("  HARNESS_RS_SMALL_ITERATIONS     - Small result set iterations (default: 100)");
         System.out.println("  HARNESS_RS_MEDIUM_ITERATIONS    - Medium result set iterations (default: 20)");
         System.out.println("  HARNESS_RS_MEDIUM_ROWS          - Medium result set row count (default: 5000)");
+        System.out.println("  HARNESS_RS_LARGE_ITERATIONS     - Large result set iterations (default: 1)");
+        System.out.println("  HARNESS_RS_LARGE_ROWS           - Large result set row count (default: 500000)");
         System.out.println("  HARNESS_MIXED_DURATION_SECONDS  - Mixed workload duration (default: 120)");
         System.out.println("  HARNESS_OUTPUT_DIR              - Output directory (default: memory-report)");
     }

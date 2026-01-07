@@ -191,6 +191,8 @@ public final class ReportModel {
         private final long successfulOperations;
         private final long failedOperations;
         private final double operationsPerSecond;
+        private final long peakHeapBytes;
+        private final long rowsProcessed;
 
         public WorkloadSummary(WorkloadResult result) {
             this.name = result.getWorkloadName();
@@ -199,6 +201,12 @@ public final class ReportModel {
             this.successfulOperations = result.getSuccessfulOperations();
             this.failedOperations = result.getFailedOperations();
             this.operationsPerSecond = result.getOperationsPerSecond();
+            this.peakHeapBytes = result.getPeakHeapBytes();
+            this.rowsProcessed = result.getRowsProcessed();
+        }
+
+        public long getPeakHeapBytes() {
+            return peakHeapBytes;
         }
 
         public Map<String, Object> toMap() {
@@ -209,6 +217,12 @@ public final class ReportModel {
             map.put("successful_operations", successfulOperations);
             map.put("failed_operations", failedOperations);
             map.put("operations_per_second", operationsPerSecond);
+            if (peakHeapBytes > 0) {
+                map.put("peak_heap_bytes", peakHeapBytes);
+            }
+            if (rowsProcessed > 0) {
+                map.put("rows_processed", rowsProcessed);
+            }
             return map;
         }
     }
@@ -294,6 +308,17 @@ public final class ReportModel {
             }
             if (allocationMetrics.containsKey("allocation_rate_mb_per_sec")) {
                 keyMetrics.put("allocation_rate_mb_per_sec", allocationMetrics.get("allocation_rate_mb_per_sec"));
+            }
+
+            // Peak heap during workload (max across all workloads)
+            long maxPeakHeap = 0;
+            for (WorkloadSummary w : workloads) {
+                if (w.getPeakHeapBytes() > maxPeakHeap) {
+                    maxPeakHeap = w.getPeakHeapBytes();
+                }
+            }
+            if (maxPeakHeap > 0) {
+                keyMetrics.put("peak_heap_during_workload_bytes", maxPeakHeap);
             }
 
             map.put("key_metrics", keyMetrics);
