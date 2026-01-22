@@ -169,7 +169,7 @@ public enum DatabricksJdbcUrlParams {
       "EnableSQLValidationForIsValid",
       "Enable SQL query execution for connection validation in isValid() method",
       "0"),
-  IGNORE_TRANSACTIONS("IgnoreTransactions", "Ignore transaction-related method calls", "0"),
+  IGNORE_TRANSACTIONS("IgnoreTransactions", "Ignore transaction-related method calls", "1"),
   FETCH_AUTOCOMMIT_FROM_SERVER(
       "FetchAutoCommitFromServer",
       "Fetch auto-commit state from server using SQL query instead of using cached value",
@@ -192,6 +192,14 @@ public enum DatabricksJdbcUrlParams {
       "EnableStreamingChunkProvider",
       "Enable streaming chunk provider for result fetching (experimental)",
       "0"),
+  ENABLE_INLINE_STREAMING(
+      "EnableInlineStreaming",
+      "Enable streaming mode with background prefetching for inline results (Thrift columnar and inline Arrow)",
+      "1"),
+  THRIFT_MAX_BATCHES_IN_MEMORY(
+      "ThriftMaxBatchesInMemory",
+      "Maximum number of batches to keep in memory for Thrift streaming (sliding window size)",
+      "3"),
   LINK_PREFETCH_WINDOW(
       "LinkPrefetchWindow",
       "Number of chunk links to prefetch ahead of consumption. "
